@@ -25,6 +25,8 @@ type Config struct {
 	ValidateJsonRawMessage        bool
 	ObjectFieldMustBeSimpleString bool
 	CaseSensitive                 bool
+	ConvertStringNumber           bool
+	AllowLongTailCharL            bool
 }
 
 // API the public interface of this package.
@@ -49,6 +51,14 @@ type API interface {
 // ConfigDefault the default API
 var ConfigDefault = Config{
 	EscapeHTML: true,
+}.Froze()
+
+var ConfigConvertStringNumber = Config{
+	EscapeHTML:             true,
+	SortMapKeys:            true,
+	ValidateJsonRawMessage: true,
+	ConvertStringNumber:    true,
+	AllowLongTailCharL:     true,
 }.Froze()
 
 // ConfigCompatibleWithStandardLibrary tries to be 100% compatible with standard library behavior
@@ -80,6 +90,8 @@ type frozenConfig struct {
 	streamPool                    *sync.Pool
 	iteratorPool                  *sync.Pool
 	caseSensitive                 bool
+	convertStringNumber           bool
+	allowLongTailCharL            bool
 }
 
 func (cfg *frozenConfig) initCache() {
@@ -134,6 +146,8 @@ func (cfg Config) Froze() API {
 		onlyTaggedField:               cfg.OnlyTaggedField,
 		disallowUnknownFields:         cfg.DisallowUnknownFields,
 		caseSensitive:                 cfg.CaseSensitive,
+		convertStringNumber:           cfg.ConvertStringNumber,
+		allowLongTailCharL:            cfg.AllowLongTailCharL,
 	}
 	api.streamPool = &sync.Pool{
 		New: func() interface{} {
